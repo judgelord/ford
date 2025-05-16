@@ -1,8 +1,9 @@
 ---
 title: "Ford School Courses"
 subtitle: ""
+#format: pdf
 format:
-    html: 
+    html:
       toc: true
       code-fold: true
 editor_options: 
@@ -11,7 +12,7 @@ editor_options:
 
 
 ```{r global.options, include=FALSE}
-knitr::opts_chunk$set(echo = T, # code is folded 
+knitr::opts_chunk$set(echo = F, # code is folded 
                       cache = F, # CACHE 
                       fig.width = 4.5, 
                       fig.height = 3.5,
@@ -21,9 +22,7 @@ knitr::opts_chunk$set(echo = T, # code is folded
                       fig.retina = 6,
                       warning = F, 
                       message = F)
-```
 
-```{r, echo=FALSE}
 library(tidyverse)
 library(rvest)
 library(magrittr)
@@ -31,21 +30,20 @@ library(magrittr)
 
 
 ```{r results='asis'}
-term = "fall/2025"
-
-cat("#", term)
 # load saved web data from code/courses.R
 here::here("data", "courses.rda") |> load()
 
+term = "fall/2025"
+
+cat("#", term, "\n")
+
 # filter to courses for the selected term
-selected_courses <- filter(courses, str_detect(url, term) )
+selected_courses <- filter(courses, str_detect(url, term) ) 
 
 # for all selected_courses courses, go to the page  
 for(i in 1:nrow(selected_courses)){
 url <-  paste0("https://fordschool.umich.edu", selected_courses$url[i])
 html <- read_html(url) # The course homepage
-links <- html_nodes(html, "a") # "a" nodes are linked text
-
 
 # the text of the course page 
 description <- html |> 
@@ -54,8 +52,7 @@ description <- html |>
   # clean it up
   stringr::str_remove_all("(\n|.)*PubPol|\nTerm\n(\n|.)*\nCredit Hours|\nTo see additional course meeting information, please\n\nlogin with your U-M Level 1 password\n\nLevel|\nShare:\n(\n|.)*|Faculty Expert") 
 
-paste0("#", description, "\n <", url, "> \n") |> 
-  cat(sep = "\n", labels = url) 
- }
-
+paste0("##", description, "\n <", url, "> \n") |> 
+  cat(sep = "\n") 
+}
 ```
